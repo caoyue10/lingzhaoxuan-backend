@@ -1,0 +1,7 @@
+*.pptx
+*.rar
+*.xlsx
+*.DS_Store
+
+data/
+images/
