@@ -2,6 +2,7 @@
 *.rar
 *.xlsx
 *.DS_Store
+*.pyc
 
 data/
 images/

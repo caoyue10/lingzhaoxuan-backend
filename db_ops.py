@@ -272,11 +272,12 @@ super_passwd = "gugong"
 #print get_authority(super_user_name, super_passwd)
 
 # add csv test
-insert_super_user(super_user_name, super_passwd)
+if get_authority(super_user_name, super_passwd) != 'super':
+    insert_super_user(super_user_name, super_passwd)
 print add_csv_to_data(super_user_name, super_passwd, '灵沼轩数据库信息表1127.csv')
 
 # add image folder
-#add_folder_to_image_table(super_user_name, super_passwd, '../ImperialPalace/dist/images')
+add_folder_to_image_table(super_user_name, super_passwd, '../ImperialPalace/dist/images')
 
 # insert user test
 #post_user = {"user_name": "caoyue",

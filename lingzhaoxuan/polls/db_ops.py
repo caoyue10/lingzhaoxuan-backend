@@ -171,8 +171,10 @@ def change_data_value(user_name, passwd, model_id, column_name, new_value):
         print "authority permission failed"
 
 
-def add_folder_to_image_table(user_name, passwd, prefix, image_folder):
+def add_folder_to_image_table(user_name, passwd, image_folder, prefix="/dist/images/"):
     if get_authority(user_name, passwd) == "super":
+        client.database.images.delete_many({})
+
         # model level
         for model in listdir(image_folder):
             # category level
@@ -182,56 +184,46 @@ def add_folder_to_image_table(user_name, passwd, prefix, image_folder):
             
             row = {}
             row['model_id'] = model
+            row['category'] = []
             for cat in listdir(model_dir):
+                if 'DS_Store' in cat:
+                    continue
                 # image level
                 cat_dir = join(model_dir, cat)
                 if os.path.isfile(cat_dir):
                     continue
-                print cat
 
-                images = {}
+                row['category'].append(cat)
+
+                images = []
                 for img in listdir(cat_dir):
-                    if 'thumbnail' not in img and 'DS_store' not in img:
-                        images[img] = join(cat_dir, img)
-                        if not os.path.isfile(get_thumbnail_name(images[img])):
-                            make_thumbnail(images[img])
+                    if 'DS_Store' in img:
+                        continue
+                    if 'thumbnail' not in img:
+                        images.append(get_thumbnail_name(prefix+model+"/"+cat+"/"+img))
+
+                        if not os.path.isfile(get_thumbnail_name(join(cat_dir, img))):
+                            make_thumbnail(join(cat_dir, img))
+                        
                 row[cat]=images
             
             print row
+            client.database.images.insert(row)
                 
     else:
         print "authority permission failed"
 
-def get_images(user_name, passwd, model_id, category_name):
+
+def get_images(user_name, passwd, model_id, cat_index):
     if get_authority(user_name, passwd) == "super":
-        # model level
-        for model in listdir(image_folder):
-            # category level
-            model_dir = join(image_folder, model)
-            if os.path.isfile(model_dir):
-                continue
-            
-            row = {}
-            row['model_id'] = model
-            for cat in listdir(model_dir):
-                # image level
-                cat_dir = join(model_dir, cat)
-                if os.path.isfile(cat_dir):
-                    continue
-                print cat
-
-                images = {}
-                for img in listdir(cat_dir):
-                    if 'thumbnail' not in img and 'DS_store' not in img:
-                        images[img] = join(cat_dir, img)
-                        if not os.path.isfile(get_thumbnail_name(images[img])):
-                            make_thumbnail(images[img])
-                row[cat]=images
-            
-            print row
-                
+        item = client.database.images.find_one({"model_id":model_id})
+        header = item['category']
+        row = item[header[int(cat_index)]]
+        
+        return {'header':header, 'content':row}
     else:
         print "authority permission failed"
+        return {}
 
 def add_image(user_name, passwd, model_id, category_name, image):
     pass
@@ -259,8 +251,8 @@ def make_thumbnail(infile):
     
 
 
-#super_user_name = "admin"
-#super_passwd = "gugong"
+super_user_name = "admin"
+super_passwd = "gugong"
 
 # check passwd test
 #print check_user_password(super_user_name, super_passwd)
@@ -272,7 +264,7 @@ def make_thumbnail(infile):
 #print add_csv_to_data(super_user_name, super_passwd, '灵沼轩数据库信息表1127.csv')
 
 # add image folder
-#add_folder_to_image_table(super_user_name, super_passwd, '/dist/images/', '../../dist/images')
+#add_folder_to_image_table(super_user_name, super_passwd, '../../dist/images')
 
 # insert user test
 #post_user = {"user_name": "caoyue",

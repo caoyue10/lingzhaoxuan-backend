@@ -27,3 +27,21 @@ def init(request):
         response = HttpResponse(json.dumps(None), content_type='application/json')
         response['Access-Control-Allow-Origin'] = '*'
         return response
+
+@csrf_exempt
+def get_image(request):
+    if request.method == "POST":
+        if 'cat_index' not in request.POST:
+            return_dict = db_ops.get_images(request.POST['username'], request.POST['password'], request.POST['model_id'], "0")
+        else:
+            return_dict = db_ops.get_images(request.POST['username'], request.POST['password'], request.POST['model_id'], request.POST['cat_index'])
+        return_dict["Access-Control-Allow-Origin"] = "http://localhost:8000"
+        
+        response = HttpResponse(json.dumps(return_dict), content_type='application/json')
+        response['Access-Control-Allow-Origin'] = '*'
+        
+        return response
+    else:
+        response = HttpResponse(json.dumps(None), content_type='application/json')
+        response['Access-Control-Allow-Origin'] = '*'
+        return response
