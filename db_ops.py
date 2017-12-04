@@ -48,6 +48,7 @@ def get_authority(user_name, passwd):
 
 
 def insert_super_user(user_name, passwd):
+    user_table = client.database.user
     hashed_password = get_hashed_password(passwd)
 
     post = {"user_name": user_name,
