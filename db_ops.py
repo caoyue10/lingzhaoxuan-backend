@@ -211,7 +211,7 @@ def add_folder_to_image_table(user_name, passwd, image_folder, prefix="/dist/ima
                     if 'DS_Store' in img:
                         continue
                     if 'thumbnail' not in img:
-                        images.append(get_thumbnail_name(prefix+model+"/"+cat+"/"+img))
+                        images.append(get_thumbnail_name(join(prefix, model, cat, img)))
 
                         if not os.path.isfile(get_thumbnail_name(join(cat_dir, img))):
                             make_thumbnail(join(cat_dir, img))
